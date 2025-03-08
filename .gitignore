@@ -1,6 +1,21 @@
-# Logs
-logs
-*.log
+# Ignore environment variables  
+.env  
+.env.local  
+.env.*  
+
+# Ignore dependency directories  
+node_modules/  
+bower_components  
+jspm_packages/  
+
+# Ignore build files  
+dist/  
+build/  
+.out
+
+# Ignore logs  
+*.log  
+logs/  
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
@@ -29,18 +44,11 @@ coverage
 # Grunt intermediate storage (https://gruntjs.com/creating-plugins#storing-task-files)
 .grunt
 
-# Bower dependency directory (https://bower.io/)
-bower_components
-
 # node-waf configuration
 .lock-wscript
 
 # Compiled binary addons (https://nodejs.org/api/addons.html)
 build/Release
-
-# Dependency directories
-node_modules/
-jspm_packages/
 
 # Snowpack dependency directory (https://snowpack.dev/)
 web_modules/
@@ -72,30 +80,18 @@ web_modules/
 # Yarn Integrity file
 .yarn-integrity
 
-# dotenv environment variable files
-.env
-.env.development.local
-.env.test.local
-.env.production.local
-.env.local
-
 # parcel-bundler cache (https://parceljs.org/)
 .cache
 .parcel-cache
 
 # Next.js build output
 .next
-out
 
 # Nuxt.js build / generate output
 .nuxt
-dist
 
 # Gatsby files
 .cache/
-# Comment in the public line in if your project uses Gatsby and not Next.js
-# https://nextjs.org/blog/next-9-1#public-directory-support
-# public
 
 # vuepress build output
 .vuepress/dist
