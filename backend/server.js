@@ -1,8 +1,8 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
-const http = require('http'); // Import the http module
-const socketIo = require('socket.io'); // Import Socket.IO
+const http = require('http');
+const socketIo = require('socket.io');
 require('dotenv').config();
 
 const authRoutes = require('./routes/auth');
@@ -21,43 +21,48 @@ mongoose
   .then(() => console.log('MongoDB connected'))
   .catch((err) => console.error('MongoDB connection error:', err));
 
-// Routes
-app.use('/api/auth', authRoutes);
-app.use('/api/matches', matchRoutes);
-
-app.get('/', (req, res) => {
-  res.send('Pickleball App Backend');
-});
-
 // Create an HTTP server
 const server = http.createServer(app);
 
 // Initialize Socket.IO
 const io = socketIo(server, {
   cors: {
-    origin: '*', // Allow all origins (replace with your frontend URL in production)
+    origin: '*', // Replace with frontend URL in production
     methods: ['GET', 'POST'],
   },
 });
 
+// Attach Socket.io to the request object
+app.use((req, res, next) => {
+  req.io = io;
+  next();
+});
+
+// Routes
+app.use('/api/auth', authRoutes);
+app.use('/api/matches', matchRoutes);
+
+// Root route
+app.get('/', (req, res) => {
+  res.send('Pickleball App Backend');
+});
+
 // Socket.IO connection handler
 io.on('connection', (socket) => {
-  console.log('New client connected');
+  console.log(`New client connected: ${socket.id}`);
 
-  // Example: Handle a custom event from the client
+  // Handle messages from clients
   socket.on('messageFromClient', (data) => {
     console.log('Message from client:', data);
-
-    // Broadcast the message to all connected clients
     io.emit('messageFromServer', {
       message: `Server received: ${data.message}`,
     });
   });
 
-  // Example: Handle match-related events
+  // Handle match-related events
   socket.on('joinMatch', (matchId) => {
     console.log(`User joined match: ${matchId}`);
-    socket.join(matchId); // Join a room for the specific match
+    socket.join(matchId);
     io.to(matchId).emit('matchUpdate', {
       message: `A new user joined match ${matchId}`,
     });
@@ -65,7 +70,7 @@ io.on('connection', (socket) => {
 
   socket.on('leaveMatch', (matchId) => {
     console.log(`User left match: ${matchId}`);
-    socket.leave(matchId); // Leave the room for the specific match
+    socket.leave(matchId);
     io.to(matchId).emit('matchUpdate', {
       message: `A user left match ${matchId}`,
     });
@@ -73,7 +78,7 @@ io.on('connection', (socket) => {
 
   // Handle disconnection
   socket.on('disconnect', () => {
-    console.log('Client disconnected');
+    console.log(`Client disconnected: ${socket.id}`);
   });
 });
 

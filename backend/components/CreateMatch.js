@@ -8,23 +8,46 @@ const CreateMatch = () => {
     dateTime: '',
     skillLevel: 'beginner',
   });
+  const [message, setMessage] = useState(''); // For success/error messages
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // Validate form fields
+    if (!formData.location || !formData.dateTime) {
+      setMessage('Location and date/time are required');
+      return;
+    }
+
     try {
+      const token = localStorage.getItem('token'); // Get the JWT token from local storage
       const res = await axios.post(
-        'http://localhost:5000/api/matches',
-        formData
+        `${process.env.REACT_APP_API_URL}/api/matches`, // Use environment variable for API URL
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`, // Include the token in the request headers
+          },
+        }
       );
-      console.log(res.data); // Handle success (e.g., show a message or redirect)
+      setMessage('Match created successfully!');
+      console.log(res.data); // Handle success (e.g., redirect or clear the form)
+      setFormData({
+        type: 'singles',
+        location: '',
+        dateTime: '',
+        skillLevel: 'beginner',
+      }); // Reset the form
     } catch (err) {
-      console.error(err.response?.data?.error || 'Failed to create match');
+      setMessage(err.response?.data?.message || 'Failed to create match');
+      console.error(err.response?.data?.error || err.message);
     }
   };
 
   return (
     <div>
       <h2>Create Match</h2>
+      {message && <p>{message}</p>} {/* Display success/error messages */}
       <form onSubmit={handleSubmit}>
         <select
           value={formData.type}
