@@ -11,7 +11,7 @@ const MatchSchema = new mongoose.Schema(
         checkedIn: { type: Boolean, default: false },
       },
     ],
-    skillLevel: { type: Number, required: true }, // 1: beginner, 2: intermediate, 3: advanced
+    skillLevel: { type: Number, required: true }, // Ensure this is a number
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',

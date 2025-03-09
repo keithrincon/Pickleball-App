@@ -9,12 +9,26 @@ const CreateMatch = () => {
     skillLevel: 'beginner',
   });
 
+  // Map skill level strings to numbers
+  const skillLevelMap = {
+    beginner: 1,
+    intermediate: 2,
+    advanced: 3,
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      const payload = {
+        ...formData,
+        skillLevel: skillLevelMap[formData.skillLevel], // Convert string to number
+      };
       const res = await axios.post(
         'http://localhost:5000/api/matches',
-        formData
+        payload,
+        {
+          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }, // Include the JWT token
+        }
       );
       console.log(res.data); // Handle success (e.g., show a message or redirect)
     } catch (err) {

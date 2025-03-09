@@ -52,29 +52,54 @@ const Home = () => {
     }
   }, [socket]);
 
+  // Handle check-in to a match
+  const handleCheckIn = async (matchId) => {
+    try {
+      const token = localStorage.getItem('token');
+      await axios.put(
+        `${process.env.REACT_APP_API_URL}/api/matches/${matchId}/check-in`,
+        {},
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+    } catch (err) {
+      console.error(err.response?.data?.error || 'Failed to check in');
+    }
+  };
+
   return (
-    <div>
-      <h1>Upcoming Matches</h1>
-      <div>
-        <label htmlFor='skillLevelFilter'>Filter by Skill Level:</label>
+    <div className='p-4'>
+      <h1 className='text-2xl font-bold mb-4'>Upcoming Matches</h1>
+      <div className='mb-4'>
+        <label htmlFor='skillLevelFilter' className='mr-2'>
+          Filter by Skill Level:
+        </label>
         <select
           id='skillLevelFilter'
           value={skillLevelFilter}
           onChange={(e) => setSkillLevelFilter(e.target.value)}
+          className='p-2 border rounded'
         >
           <option value=''>All</option>
-          <option value='beginner'>Beginner</option>
-          <option value='intermediate'>Intermediate</option>
-          <option value='advanced'>Advanced</option>
+          <option value='1'>Beginner</option>
+          <option value='2'>Intermediate</option>
+          <option value='3'>Advanced</option>
         </select>
       </div>
       {matches.map((match) => (
-        <div key={match._id}>
-          <h2>{match.type} Match</h2>
+        <div key={match._id} className='p-4 border rounded mb-4'>
+          <h2 className='text-xl font-semibold'>{match.type} Match</h2>
           <p>Location: {match.location}</p>
           <p>Date: {new Date(match.dateTime).toLocaleString()}</p>
           <p>Skill Level: {match.skillLevel}</p>
           <p>Players: {match.players.length}</p>
+          <button
+            onClick={() => handleCheckIn(match._id)}
+            className='mt-2 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600'
+          >
+            Check In
+          </button>
         </div>
       ))}
     </div>
